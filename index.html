@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyMate AI — Elevating Student Writing</title>
+  <!-- DM Serif Display & DM Sans Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Styling based on frontend globals.css visual system */
+    :root {
+      --ink: #0e0c0a;
+      --paper: #faf8f4;
+      --cream: #f2ede3;
+      --accent: #c84b31;
+      --accent-light: #f5e8e4;
+      --gold: #d4a843;
+      --muted: #8a8070;
+      --border: #e2ddd4;
+      --sidebar: #1a1814;
+      --sidebar-text: #c8c0b0;
+      --sidebar-active: #c84b31;
+      --green: #2d7a4f;
+      --green-light: #e6f4ed;
+      --blue: #2563a8;
+      --blue-light: #e8f0fb;
+      --shadow: 0 4px 20px rgba(14, 12, 10, 0.06);
+      --shadow-lg: 0 10px 40px rgba(14, 12, 10, 0.1);
+      
+      --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    /* Ambient Warm Textures */
+    .bg-texture {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 10% 20%, rgba(200, 75, 49, 0.03) 0%, transparent 50%),
+                  radial-gradient(circle at 90% 80%, rgba(212, 168, 67, 0.03) 0%, transparent 50%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Header Nav */
+    header {
+      padding: 18px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      border-bottom: 1.5px solid var(--border);
+      background: white;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .logo-text {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.3px;
+    }
+
+    .badge-product {
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1px solid rgba(200, 75, 49, 0.2);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    /* Slides Viewport */
+    .presentation-viewport {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 48px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      max-width: 1200px;
+      height: 92%;
+      max-height: 640px;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 56px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      opacity: 0;
+      transform: translateY(30px) scale(0.98);
+      pointer-events: none;
+      transition: var(--transition-smooth);
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+    }
+
+    .slide-header {
+      margin-bottom: 24px;
+    }
+
+    .slide-category {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .slide-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 38px;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+    }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      overflow-y: auto;
+      padding-right: 12px;
+    }
+
+    .slide-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .slide-body::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    /* Typography & lists */
+    p.lead-text {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--muted);
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+
+    .accent-word {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    ul.bullet-list {
+      list-style: none;
+    }
+
+    ul.bullet-list li {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 14px;
+      font-size: 15.5px;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+
+    ul.bullet-list li::before {
+      content: "✦";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 16px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      width: 100%;
+      align-items: center;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 100%;
+    }
+
+    /* Scholarly visual elements */
+    .paper-card {
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: var(--transition-smooth);
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+    .paper-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(14, 12, 10, 0.08);
+    }
+    .paper-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent);
+      border-radius: 16px 0 0 16px;
+    }
+
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: inline-block;
+      color: var(--accent);
+    }
+
+    .card-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 19px;
+      font-weight: 400;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .card-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Title slide layout */
+    .title-slide-body {
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100%;
+    }
+
+    .title-main {
+      font-size: 58px;
+      line-height: 1.1;
+      font-weight: 400;
+      margin-bottom: 12px;
+      color: var(--ink);
+      font-family: 'DM Serif Display', Georgia, serif;
+      letter-spacing: -1px;
+    }
+
+    .title-main em {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .title-sub {
+      font-size: 19px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      font-weight: 400;
+      line-height: 1.6;
+      max-width: 800px;
+    }
+
+    .title-footer {
+      display: flex;
+      gap: 32px;
+      font-size: 13px;
+      color: var(--muted);
+      border-top: 1.5px solid var(--border);
+      padding-top: 20px;
+      width: 100%;
+    }
+
+    .title-footer strong {
+      color: var(--ink);
+    }
+
+    /* Mockups & UI Simulations */
+    .solution-mockup {
+      display: flex;
+      flex-direction: column;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      height: 310px;
+    }
+
+    .mockup-header {
+      background: var(--cream);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .mockup-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .mockup-dot-red { background: var(--accent); }
+    .mockup-dot-yellow { background: var(--gold); }
+    .mockup-dot-green { background: var(--green); }
+
+    .mockup-title {
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 6px;
+      font-family: monospace;
+    }
+
+    .mockup-body {
+      flex: 1;
+      display: flex;
+      padding: 14px;
+      gap: 14px;
+      background: var(--paper);
+    }
+
+    .mockup-editor {
+      flex: 1.2;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 11px;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    .mockup-coach {
+      flex: 0.8;
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .coach-bubble {
+      background: var(--accent-light);
+      color: var(--ink);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .score-indicator-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .score-bar-lbl {
+      font-size: 9px;
+      width: 48px;
+      color: var(--muted);
+      font-weight: bold;
+    }
+    .score-bar-track {
+      flex: 1;
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    /* Rubric scorecard pill */
+    .rubric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
+    .rubric-pill {
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rubric-pill-icon {
+      font-size: 18px;
+    }
+    .rubric-pill-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .rubric-pill-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .rubric-pill-desc {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Socratic Dialogue Chat box visual */
+    .socratic-box {
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      line-height: 1.5;
+      width: 100%;
+    }
+    .msg-group {
+      margin-bottom: 12px;
+    }
+    .msg-group:last-child {
+      margin-bottom: 0;
+    }
+    .msg-lbl {
+      font-weight: 700;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+      display: block;
+    }
+    .msg-lbl-coach { color: var(--accent); }
+    .msg-lbl-student { color: var(--muted); }
+    .msg-txt {
+      color: var(--ink);
+      background: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      display: inline-block;
+      max-width: 100%;
+    }
+
+    /* Streak visualizer */
+    .streak-container {
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      box-shadow: var(--shadow);
+    }
+    .streak-fire {
+      font-size: 42px;
+      animation: flicker 2s infinite ease-in-out;
+      margin-bottom: 4px;
+    }
+    @keyframes flicker {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(200, 75, 49, 0.2)); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 10px rgba(200, 75, 49, 0.4)); }
+    }
+    .streak-num {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 30px;
+      color: var(--accent);
+    }
+    .streak-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .streak-track {
+      display: flex;
+      gap: 5px;
+      width: 100%;
+    }
+    .streak-dot {
+      flex: 1;
+      height: 7px;
+      border-radius: 3px;
+      background: var(--border);
+    }
+    .streak-dot.active {
+      background: var(--accent);
+    }
+
+    /* Audience benefits rows */
+    .benefit-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    .benefit-num {
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1px solid rgba(200, 75, 49, 0.15);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .benefit-txt-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .benefit-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--ink);
+    }
+    .benefit-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Footer Navigation */
+    footer {
+      padding: 16px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      border-top: 1.5px solid var(--border);
+      background: var(--sidebar);
+      color: var(--sidebar-text);
+    }
+
+    .slide-progress-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .dot-indicators {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(200, 192, 176, 0.35);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .dot.active {
+      background: var(--sidebar-active);
+      width: 18px;
+      border-radius: 4px;
+    }
+
+    .page-indicator {
+      font-size: 12px;
+      color: var(--sidebar-text);
+      font-weight: 500;
+      min-width: 50px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      color: var(--sidebar-text);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: var(--transition-smooth);
+      user-select: none;
+    }
+    .nav-btn:hover {
+      background: var(--sidebar-active);
+      border-color: var(--sidebar-active);
+      color: white;
+      transform: scale(1.05);
+    }
+    .nav-btn:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Warm Textures -->
+  <div class="bg-texture"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">✍</div>
+      <div class="logo-text">StudyMate</div>
+    </div>
+    <div class="badge-product">PRODUCT PRESENTATION</div>
+  </header>
+
+  <!-- Viewport -->
+  <div class="presentation-viewport">
+
+    <!-- Slide 1: Title Slide -->
+    <div class="slide active" id="slide-1">
+      <div></div>
+      <div class="slide-body title-slide-body">
+        <div class="slide-category">Meet your writing companion</div>
+        <h1 class="title-main">Elevating Student Writing,<br>One Draft at a Time</h1>
+        <p class="title-sub">Discover StudyMate AI — the interactive writing companion that provides 24/7 personalized rubric feedback and Socratic chatbot coaching to build confident academic writers.</p>
+        <div class="title-footer">
+          <span>Product Overview: <strong>StudyMate Platform</strong></span>
+          <span>Target Audience: <strong>Students, Educators & Academic Centers</strong></span>
+          <span>Engine: <strong>Google Gemini 2.5 Flash API</strong></span>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 2: Core Vision -->
+    <div class="slide" id="slide-2">
+      <div class="slide-header">
+        <div class="slide-category">The Vision</div>
+        <h2 class="slide-title">Bridging the Academic Feedback Gap</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <p class="lead-text">Academic drafting is a dense process of refining thoughts. Traditional grading feedback happens <em>after</em> submission, turning critical editing into an afterthought.</p>
+            <ul class="bullet-list">
+              <li><span class="accent-word">Active Self-Critique:</span> StudyMate empowers writers to evaluate draft structures while they write, transforming revision from a chore into a dialogue.</li>
+              <li><span class="accent-word">Iterative Revision Cycle:</span> By offering instantaneous grading checks, student writers absorb grammar conventions and logical reasoning structures recursively.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="paper-card" style="background: var(--cream);">
+              <span class="card-icon">💡</span>
+              <div class="card-title">Continuous Feedback Loop</div>
+              <div class="card-desc">When students refine drafts actively before teacher evaluation, they submit cleaner drafts and absorb styling principles more deeply.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 3: The Problem -->
+    <div class="slide" id="slide-3">
+      <div class="slide-header">
+        <div class="slide-category">The Friction</div>
+        <h2 class="slide-title">The Student Writing Bottleneck</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <p class="lead-text">Writing high-caliber essays involves deep cognitive effort. Without prompt, accessible reviews, students hit structural and editing barriers:</p>
+            <ul class="bullet-list">
+              <li><span class="accent-word">Drafting Blindspots:</span> Spotting awkward transitions, passive voice, and logical thesis drift is difficult for self-editors.</li>
+              <li><span class="accent-word">Grading Anxiety:</span> Handing in essays without any diagnostic check breeds performance anxiety.</li>
+              <li><span class="accent-word">Educator Constraints:</span> Overloaded teachers lack the hours to walk every student through five separate iterations.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="paper-card" style="border-top: 3px solid var(--accent); background: var(--accent-light);">
+              <span class="card-icon">⏳</span>
+              <div class="card-title">Friction Leads to Stagnation</div>
+              <div class="card-desc">When drafting occurs without feedback, writers repeat grammar flaws and structurally weak styles, preventing overall skill growth.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 4: The StudyMate Solution -->
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <div class="slide-category">Our Platform</div>
+        <h2 class="slide-title">The StudyMate Solution</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <p class="lead-text">StudyMate is a focused digital workspace offering real-time writing support directly in the browser.</p>
+            <ul class="bullet-list">
+              <li><strong>Focused Paper Canvas:</strong> A warm, elegant off-white writing editor optimized for reading and drafting.</li>
+              <li><strong>Real-time Rubric Analysis:</strong> Instantaneous evaluation metrics scored across standardized grading standards in under 10 seconds.</li>
+              <li><strong>Conversational Support:</strong> A friendly, Socratic companion who prompts and guides instead of correcting blindly.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="solution-mockup">
+              <div class="mockup-header">
+                <div class="mockup-dot mockup-dot-red"></div>
+                <div class="mockup-dot mockup-dot-yellow"></div>
+                <div class="mockup-dot mockup-dot-green"></div>
+                <span class="mockup-title">studymate.ai/editor</span>
+              </div>
+              <div class="mockup-body">
+                <div class="mockup-editor">
+                  <strong>Thesis Draft</strong><br>
+                  The dataset illustrates a clear transition... <span style="background: var(--accent-light); border-bottom: 1.5px solid var(--accent);">the group of essays are</span>...
+                </div>
+                <div class="mockup-coach">
+                  <div class="coach-bubble">
+                    Subject-verb agreement issue. Change "are" to "is".
+                  </div>
+                  <div>
+                    <div class="score-indicator-bar">
+                      <span class="score-bar-lbl">Grammar</span>
+                      <div class="score-bar-track"><div class="score-bar-fill" style="width: 88%;"></div></div>
+                    </div>
+                    <div class="score-indicator-bar" style="margin-top: 4px;">
+                      <span class="score-bar-lbl">Structure</span>
+                      <div class="score-bar-track"><div class="score-bar-fill" style="width: 90%;"></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 5: How It Works -->
+    <div class="slide" id="slide-5">
+      <div class="slide-header">
+        <div class="slide-category">User Workflow</div>
+        <h2 class="slide-title">Iterative Mastery: How It Works</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="paper-card">
+            <span class="card-icon" style="font-size: 24px; font-weight: bold;">1</span>
+            <div class="card-title">Draft</div>
+            <div class="card-desc">Write freely or paste your text inside our distraction-free, paper-like editor canvas.</div>
+          </div>
+          <div class="paper-card">
+            <span class="card-icon" style="font-size: 24px; font-weight: bold;">2</span>
+            <div class="card-title">Analyze</div>
+            <div class="card-desc">Press "Analyze" to generate a detailed rubric audit using Gemini AI in under 10 seconds.</div>
+          </div>
+          <div class="paper-card">
+            <span class="card-icon" style="font-size: 24px; font-weight: bold;">3</span>
+            <div class="card-title">Polishing</div>
+            <div class="card-desc">Interact with suggestion cards in the sidebar and chat with the Socratic coach to finalize the draft.</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 6: Rubric Grading -->
+    <div class="slide" id="slide-6">
+      <div class="slide-header">
+        <div class="slide-category">Scientific Feedback</div>
+        <h2 class="slide-title">Standardized Rubric Metrics</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <p class="lead-text">StudyMate grades essays from 0 to 100 based on standard academic rubrics, highlighting exact areas to refine:</p>
+            <div class="rubric-grid">
+              <div class="rubric-pill">
+                <span class="rubric-pill-icon">📊</span>
+                <div class="rubric-pill-text">
+                  <span class="rubric-pill-title">Structure</span>
+                  <span class="rubric-pill-desc">Flow, transitions & topic focus.</span>
+                </div>
+              </div>
+              <div class="rubric-pill">
+                <span class="rubric-pill-icon">⚖️</span>
+                <div class="rubric-pill-text">
+                  <span class="rubric-pill-title">Argument</span>
+                  <span class="rubric-pill-desc">Thesis force & logical support.</span>
+                </div>
+              </div>
+              <div class="rubric-pill">
+                <span class="rubric-pill-icon">✨</span>
+                <div class="rubric-pill-text">
+                  <span class="rubric-pill-title">Clarity & Style</span>
+                  <span class="rubric-pill-desc">Active voice and tone checks.</span>
+                </div>
+              </div>
+              <div class="rubric-pill">
+                <span class="rubric-pill-icon">✍</span>
+                <div class="rubric-pill-text">
+                  <span class="rubric-pill-title">Grammar</span>
+                  <span class="rubric-pill-desc">Syntax, spelling & mechanics.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="paper-card" style="border-top-color: var(--accent);">
+              <span class="card-icon" style="color: var(--accent);">✓</span>
+              <div class="card-title">Actionable Suggestions</div>
+              <div class="card-desc">Suggestions are delivered as discrete cards showing why an issue matters and how to rewrite it. Clicking "Accept" updates the editor instantly.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 7: Suggestion Cards -->
+    <div class="slide" id="slide-7">
+      <div class="slide-header">
+        <div class="slide-category">Interactive Editing</div>
+        <h2 class="slide-title">Interactive Recommendation Cards</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <p class="lead-text">StudyMate doesn't just list errors. It packages them into beautiful, interactive suggestion cards that keep students in control of their work.</p>
+            <ul class="bullet-list">
+              <li><strong>Creative Autonomy:</strong> Students can choose to accept or dismiss suggestions, ensuring they remain the sole author of their draft.</li>
+              <li><strong>Constructive Rewrites:</strong> Offers side-by-side active vs. passive sentence comparisons, demonstrating styling rules in action.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="paper-card" style="background: white; border-top: 3px solid var(--accent);">
+              <div style="font-size: 11px; text-transform: uppercase; color: var(--accent); font-weight: bold; margin-bottom: 8px;">Passive Voice Suggestion</div>
+              <div style="font-size: 14px; font-weight: bold; margin-bottom: 6px;">Clarity & Style Check</div>
+              <p style="font-size: 12.5px; color: var(--muted); margin-bottom: 12px; line-height: 1.4;">Passive voice decreases impact. Replace "The results were verified by us" with "We verified the results".</p>
+              <div style="display: flex; gap: 8px;">
+                <button style="background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;">Accept</button>
+                <button style="background: transparent; color: var(--muted); border: 1.5px solid var(--border); padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;">Dismiss</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 8: Socratic Coach -->
+    <div class="slide" id="slide-8">
+      <div class="slide-header">
+        <div class="slide-category">Tutoring Model</div>
+        <h2 class="slide-title">The Socratic AI Writing Coach</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <p class="lead-text">StudyMate incorporates a friendly chat assistant built using the Socratic dialogue tutoring method.</p>
+            <ul class="bullet-list">
+              <li><span class="accent-word">Guiding, Not Ghostwriting:</span> The coach declines to write paragraphs for students. Instead, it asks guiding questions to help them formulate their own thesis claims.</li>
+              <li><span class="accent-word">Topic Guardrails:</span> Policed strictly by prompt rules, the coach declines STEM, algebra, or coding, keeping students focused on academic writing.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="socratic-box">
+              <div class="msg-group">
+                <span class="msg-lbl msg-lbl-student">Student</span>
+                <div class="msg-txt">Can you write my intro paragraph about climate change?</div>
+              </div>
+              <div class="msg-group">
+                <span class="msg-lbl msg-lbl-coach">Coach (AI)</span>
+                <div class="msg-txt">I can't write it for you, but I can help you draft it! What is the main argument or claim you want to make about climate change? Let's write a hook together based on that.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 9: Gamification -->
+    <div class="slide" id="slide-9">
+      <div class="slide-header">
+        <div class="slide-category">Engagement System</div>
+        <h2 class="slide-title">Habit-Forming Mechanics & Gamification</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <p class="lead-text">Writing is a habit. StudyMate cultivates positive daily writing patterns through interactive rewards:</p>
+            <ul class="bullet-list">
+              <li><span class="accent-word">Daily Streaks:</span> Visual streak counts tracking consecutive active writing days, inspiring daily engagement.</li>
+              <li><span class="accent-word">Scholarly Badges:</span> Earn digital achievements (e.g. <i>"First Draft"</i>, <i>"Word Smith" (10k words)</i>, <i>"Academic Master" (90+ score)</i>).</li>
+              <li><span class="accent-word">Progress Timelines:</span> Renders dynamic weekly and monthly word counts and score progress charts.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="streak-container">
+              <div class="streak-fire">🔥</div>
+              <div class="streak-num">5 Day Streak</div>
+              <div class="streak-desc">You are in the top 15% of active writers!</div>
+              <div class="streak-track">
+                <div class="streak-dot active"></div>
+                <div class="streak-dot active"></div>
+                <div class="streak-dot active"></div>
+                <div class="streak-dot active"></div>
+                <div class="streak-dot active"></div>
+                <div class="streak-dot"></div>
+                <div class="streak-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 10: Student Benefits -->
+    <div class="slide" id="slide-10">
+      <div class="slide-header">
+        <div class="slide-category">Value Proposition</div>
+        <h2 class="slide-title">Audience Benefits: Empowering Students</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <p class="lead-text">StudyMate removes the friction and stress from the essay writing process, fostering autonomy:</p>
+            <ul class="bullet-list">
+              <li><span class="accent-word">Conquers Blank Page Panic:</span> Brainstorming prompts with the AI Coach help students formulate their initial essay outlines.</li>
+              <li><span class="accent-word">Eliminates Grading Surprise:</span> Pre-submission score diagnostics let students verify their draft quality, building grade confidence.</li>
+              <li><span class="accent-word">Active Skill Acquisition:</span> Engaging with inline suggestions teaches style, structure, and grammar rules actively over time.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="paper-card" style="border-top-color: var(--accent);">
+              <span class="card-icon">🎓</span>
+              <div class="card-title">Empowered Learners</div>
+              <div class="card-desc">By receiving instant, private feedback, students can self-assess their writing without classroom pressure, growing at their own speed.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 11: Teacher Benefits -->
+    <div class="slide" id="slide-11">
+      <div class="slide-header">
+        <div class="slide-category">Value Proposition</div>
+        <h2 class="slide-title">Audience Benefits: Supporting Educators</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <p class="lead-text">Instructors are stretched thin. StudyMate works alongside classroom educators as a scalable grading assistant:</p>
+            <ul class="bullet-list">
+              <li><span class="accent-word">Cleaner Draft Submissions:</span> Students filter out basic grammatical errors, typos, and passive sentences before final submission.</li>
+              <li><span class="accent-word">Focus on Deeper Grading:</span> Instructors save hours of editing time, allowing them to grade critical arguments and thesis concepts.</li>
+              <li><span class="accent-word">Diagnostic Clarity:</span> Helps educators track aggregate student struggles across weekly analytics.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="paper-card" style="border-top-color: var(--green); background: var(--green-light);">
+              <span class="card-icon" style="color: var(--green);">📚</span>
+              <div class="card-title" style="color: var(--green);">Elevated Classroom Quality</div>
+              <div class="card-desc" style="color: var(--green);">StudyMate ensures that the papers teachers receive have already been through three iterations of basic logical structure and styling review.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 12: Technology stack -->
+    <div class="slide" id="slide-12">
+      <div class="slide-header">
+        <div class="slide-category">Behind the Magic</div>
+        <h2 class="slide-title">Modern Technical Architecture</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="paper-card" style="border-top: 3px solid var(--blue);">
+            <div class="card-icon" style="color: var(--blue);">💻</div>
+            <div class="card-title">Frontend Shell</div>
+            <div class="card-desc">React 19, Next.js App Router, Axios Interceptors (injections and 401 routes), and clean custom CSS page variables.</div>
+          </div>
+          <div class="paper-card" style="border-top: 3px solid var(--accent);">
+            <div class="card-icon" style="color: var(--accent);">⚙️</div>
+            <div class="card-title">Backend Engines</div>
+            <div class="card-desc">Express 5.x TypeScript, BCrypt hashing, JWT tokens/cookies auth, and Zod runtime schema validations.</div>
+          </div>
+          <div class="paper-card" style="border-top: 3px solid var(--gold);">
+            <div class="card-icon" style="color: var(--gold);">📡</div>
+            <div class="card-title">Database & AI</div>
+            <div class="card-desc">Prisma Client linked via Neon HTTP adapter pool to PostgreSQL. Gemini 2.5 Flash API connector.</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Slide 13: Closing -->
+    <div class="slide" id="slide-13">
+      <div></div>
+      <div class="slide-body title-slide-body" style="align-items: center; text-align: center;">
+        <div class="slide-category">Get Started Today</div>
+        <h1 class="title-main" style="font-size: 56px;">Write. Analyze. <em>Master.</em></h1>
+        <p class="title-sub" style="max-width: 600px;">Join thousands of students who are polishing their essays, building positive daily habits, and scoring higher with StudyMate.</p>
+        <div style="margin-top: 16px;">
+          <span class="badge-product" style="font-size: 14px; padding: 10px 24px;">Start Your Writing Journey</span>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+  </div>
+
+  <!-- Footer Controls -->
+  <footer>
+    <div class="slide-progress-container">
+      <div class="page-indicator" id="page-num">Slide 1 / 13</div>
+      <div class="dot-indicators" id="dots-container">
+        <div class="dot active" onclick="goToSlide(0)"></div>
+        <div class="dot" onclick="goToSlide(1)"></div>
+        <div class="dot" onclick="goToSlide(2)"></div>
+        <div class="dot" onclick="goToSlide(3)"></div>
+        <div class="dot" onclick="goToSlide(4)"></div>
+        <div class="dot" onclick="goToSlide(5)"></div>
+        <div class="dot" onclick="goToSlide(6)"></div>
+        <div class="dot" onclick="goToSlide(7)"></div>
+        <div class="dot" onclick="goToSlide(8)"></div>
+        <div class="dot" onclick="goToSlide(9)"></div>
+        <div class="dot" onclick="goToSlide(10)"></div>
+        <div class="dot" onclick="goToSlide(11)"></div>
+        <div class="dot" onclick="goToSlide(12)"></div>
+      </div>
+    </div>
+    
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="prevSlide()" title="Previous slide (Left arrow)">←</button>
+      <button class="nav-btn" onclick="nextSlide()" title="Next slide (Right arrow or Space)">→</button>
+    </div>
+  </footer>
+
+  <script>
+    // Navigation Logic
+    let currentSlideIndex = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const pageNum = document.getElementById('page-num');
+
+    function goToSlide(index) {
+      if (index < 0 || index >= slides.length) return;
+      
+      slides[currentSlideIndex].classList.remove('active');
+      dots[currentSlideIndex].classList.remove('active');
+      
+      currentSlideIndex = index;
+      
+      slides[currentSlideIndex].classList.add('active');
+      dots[currentSlideIndex].classList.add('active');
+      
+      pageNum.innerText = `Slide ${currentSlideIndex + 1} / ${slides.length}`;
+    }
+
+    function nextSlide() {
+      if (currentSlideIndex < slides.length - 1) {
+        goToSlide(currentSlideIndex + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlideIndex > 0) {
+        goToSlide(currentSlideIndex - 1);
+      }
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        nextSlide();
+        e.preventDefault();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
